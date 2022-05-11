@@ -154,7 +154,7 @@ router.post("/uploadProfilePicture",function (req, res, next) {
         }
         else {
             console.log(res);
-            user.updateOne({email:req.body.email }, {
+            user.updateOne({email:req.query.email }, {
                 $set: {
                     profile_img:req.file.filename,
                 }
@@ -177,5 +177,28 @@ router.post("/uploadProfilePicture",function (req, res, next) {
     })
 })
 
+// // resume upload
+// const upload= multer({ dest: 'public/files'});
+// router.post('/uploadResume', upload.single('myFile'), function (req, res, next) {
+//     user.updateOne({email:req.query.email }, {
+//         $set: {
+//             resume_doc:req.file.filename,
+//         }
+//     }, function (err, _user) {
+//         if (err) {
+//             res.status(200).json({
+//                 message: "Doc Upload Failed",
+//                 statuscode: "202"
+//             });
+//         }
+//         else {
+//             res.status(200).json({
+//                 message: "Doc Upload Success",
+//                 statuscode: "200"
+//             });
+
+//         }
+//     })
+// })
 
 module.exports = router;
