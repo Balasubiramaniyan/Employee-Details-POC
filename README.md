@@ -13,8 +13,7 @@ http://localhost:2001/api/v1.0/createuser
 Request :
 {"email":"abc@gmail.com",
 "subject":"some",
-"contact":"8754844684" ////schedule in minutes
-}
+"contact":"8754844684" }
 
 //*** List api ***//
 http://localhost:2001/api/v1.0/getuser
@@ -31,7 +30,7 @@ http://localhost:2001/api/v1.0/updateuser
 
 {
     "email":"kdhasan24.kd@gmail.com",
-    "schedule":"12" ////schedule in minutes
+     "contact":"8754844684"
 }
 
 ///***upload File **///
