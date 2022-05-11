@@ -5,6 +5,7 @@ var path = require('path');
 
 
 router.post('/createuser', function (req, res, next) {
+    var data = req.body;
     usercreate(data).then(host => {
         return res.status(200).json({
             message: "success",
@@ -104,6 +105,17 @@ router.post('/updateuser', function (req, res, _next) {
     })
 });
 
+// delete user
+router.delete('/deleteuser', function (req, res) {
+    user.deleteOne({email:req.body.email}, function (err, _user) {
+        if (err) throw err;
+        res.status(200).json({
+            message: "user deleted sucessfully",
+            statuscode: "200"
+        });
+    });
+});
+
 ///upload -image 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -141,7 +153,7 @@ router.post("/uploadProfilePicture",function (req, res, next) {
             res.send(err)
         }
         else {
-            console.log(res)
+            console.log(res);
             user.updateOne({email:req.body.email }, {
                 $set: {
                     profile_img:req.file.filename,

@@ -69,7 +69,6 @@ app.use("/api", function (req, res) {
 
 
 app.use('/api', function (err, req, res, next) {
-    logger1.info(err);
     res.status(500).json({
         err: err.stack,
         message: "Internal server Error",
