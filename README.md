@@ -34,6 +34,7 @@ http://localhost:2001/api/v1.0/updateuser
     "email":"kdhasan24.kd@gmail.com",
      "contact":"8754844684"
 }
+
 //*** Delete user ***//
 http://localhost:2001/api/v1.0/deleteuser
 
