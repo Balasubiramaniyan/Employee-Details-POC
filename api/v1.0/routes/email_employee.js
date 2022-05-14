@@ -29,7 +29,7 @@ function usercreate(data){
 
 // send email
     var transporter2 = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
+        host: 'smtp.googlemail.com',
         port: 465,
         secure: true,
         auth: {
