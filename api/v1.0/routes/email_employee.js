@@ -1,4 +1,4 @@
-var multer  = require('multer');
+var multer = require('multer');
 var path = require('path');
 
 
@@ -20,54 +20,53 @@ router.post('/createuser', function (req, res, next) {
 
 });
 
-function usercreate(data){
+function usercreate(data) {
     return new Promise(async (resolve, reject) => {
         try {
             var email = data.email;
             var name = data.name;
             var insuser = await userdata(data);
 
-// send email
-    var transporter2 = nodemailer.createTransport({
-        host: 'smtp.googlemail.com',
-        port: 465,
-        secure: true,
-        auth: {
-            user: 'bala10decoders@gmail.com',
-            pass: 'Abc@12345'
-        }
-    })
+            // send email
+            var transporter2 = nodemailer.createTransport({
+                host: 'smtp.googlemail.com',
+                port: 465,
+                secure: true,
+                auth: {
+                    user: 'bala10decoders@gmail.com',
+                    pass: 'Abc@12345'
+                }
+            })
 
-    mailOptions = {
-        from: 'bala10decoders@gmail.com',
-        to: email,
-        subject: "Employee Acknowledgement",
-        html: '<h2>Your details are added successfully. We will contact soon</h2>'
-    }
+            mailOptions = {
+                from: 'bala10decoders@gmail.com',
+                to: email,
+                subject: "Employee Acknowledgement",
+                html: '<h2>Your details are added successfully. We will contact soon</h2>'
+            }
 
-    transporter2.sendMail(mailOptions, function (err, info) {
-        if (err)
-            console.log(err);
-        else
-            console.log(info);
-    });
+            transporter2.sendMail(mailOptions, function (err, info) {
+                if (err)
+                    console.log(err);
+                else
+                    console.log(info);
+            });
 
             resolve('success')
-           
+
         } catch (error) {
             return reject(error);
         }
     });
- 
+
 }
 
 async function userdata(data) {
     const createinsrt = await user.create(data);
     return createinsrt;
-  }
+}
 
-   ///get data
-    ///getsliderforall
+///get data
 router.post('/getuser', function (req, res) {
     user.find({}, function (err, users) {
         if (err) return res.status(500).send("There was a problem finding the users.");
@@ -77,16 +76,16 @@ router.post('/getuser', function (req, res) {
 ///edit user details
 
 router.get('/edituser', function (req, res) {
-    user.findOne({email:req.body.email}, function (_err, user) {
+    user.findOne({ email: req.body.email }, function (_err, user) {
         res.send(user);
     });
 });
 ///update user
 router.post('/updateuser', function (req, res, _next) {
-    user.update({email:req.body.email }, {
+    user.update({ email: req.body.email }, {
         $set: {
-            name:req.body.name,
-            contact:req.body.contact
+            name: req.body.name,
+            contact: req.body.contact
         }
     }, function (err, _user) {
         if (err) {
@@ -107,7 +106,7 @@ router.post('/updateuser', function (req, res, _next) {
 
 // delete user
 router.delete('/deleteuser', function (req, res) {
-    user.deleteOne({email:req.body.email}, function (err, _user) {
+    user.deleteOne({ email: req.body.email }, function (err, _user) {
         if (err) throw err;
         res.status(200).json({
             message: "user deleted sucessfully",
@@ -119,44 +118,69 @@ router.delete('/deleteuser', function (req, res) {
 ///upload -image 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, "public/images")
+        var filetypes = /txt|pdf/;
+        var filetypesI = /jpeg|jpg|png/;
+        var mimetypeImage = filetypesI.test(file.mimetype);
+        var mimetypeDoc = filetypes.test(file.mimetype);
+        var extnameI = filetypesI.test(path.extname(
+            file.originalname).toLowerCase());
+        var extname = filetypes.test(path.extname(
+            file.originalname).toLowerCase());
+        if (mimetypeImage && extnameI) {
+            cb(null, "public/images")
+        } else if (mimetypeDoc && extname) {
+            cb(null, "public/files")
+        }
+
     },
     filename: function (req, file, cb) {
-      cb(null, file.fieldname + "-" + Date.now()+".jpg")
-    }
-  })
-
-    
-var upload = multer({ 
-    storage: storage,
-    fileFilter: function (req, file, cb){
-        var filetypes = /jpeg|jpg|png/;
-        var mimetype = filetypes.test(file.mimetype);
-  
-        var extname = filetypes.test(path.extname(
-                    file.originalname).toLowerCase());
+       
+        var filetypesI = /jpeg|jpg|png/;
+        var mimetypeImage = filetypesI.test(file.mimetype);
         
-        if (mimetype && extname) {
+        let ext = mimetypeImage ? '.jpg' : '.pdf';
+        cb(null, file.fieldname + "-" + Date.now() + ext)
+    }
+})
+
+
+var upload = multer({
+    storage: storage,
+    fileFilter: function (req, file, cb) {
+        var filetypes = /plain|pdf/;
+        var filetypesI = /jpeg|jpg|png/;
+        var mimetypeImage = filetypesI.test(file.mimetype);
+        var mimetypeDoc = filetypes.test(file.mimetype);
+        var extnameI = filetypesI.test(path.extname(
+            file.originalname).toLowerCase());
+        var extname = filetypes.test(path.extname(
+            file.originalname).toLowerCase());
+        if (mimetypeImage && extnameI) {
+            cb(null, "public/images")
+        } else if (mimetypeDoc && extname) {
+            cb(null, "public/files")
+        }
+        if ((mimetypeImage || mimetypeDoc) && (extnameI || extname)) {
             return cb(null, true);
         }
-      
-        cb("Error: File upload only supports the "
-                + "following filetypes - " + filetypes);
-      } 
-}).single("mypic");       
-  
 
-    
-router.post("/uploadProfilePicture",function (req, res, next) {
-    upload(req,res,function(err) {
-        if(err) {
+        cb("Error: File upload only supports the "
+            + "following filetypes - " + filetypes);
+    }
+}).single("mypic");
+
+
+
+router.post("/uploadProfilePicture", function (req, res, next) {
+    upload(req, res, function (err) {
+        if (err) {
             res.send(err)
         }
         else {
-            console.log(res);
-            user.updateOne({email:req.query.email }, {
+            console.log(res, req.file.filename);
+            user.updateOne({ email: req.query.email }, {
                 $set: {
-                    profile_img:req.file.filename,
+                    profile_img: req.file.filename,
                 }
             }, function (err, _user) {
                 if (err) {
@@ -170,7 +194,7 @@ router.post("/uploadProfilePicture",function (req, res, next) {
                         message: "Image Upload Success",
                         statuscode: "200"
                     });
-        
+
                 }
             })
         }
@@ -180,6 +204,7 @@ router.post("/uploadProfilePicture",function (req, res, next) {
 // // resume upload
 // const upload= multer({ dest: 'public/files'});
 // router.post('/uploadResume', upload.single('myFile'), function (req, res, next) {
+//     console.log("request--->>>", req)
 //     user.updateOne({email:req.query.email }, {
 //         $set: {
 //             resume_doc:req.file.filename,
